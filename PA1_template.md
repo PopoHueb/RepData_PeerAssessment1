@@ -1,69 +1,75 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
 Firs we will load the file with the date field as a factor of characters
 
-```{r}
+
+```r
 arq = read.csv("activity.csv", header= TRUE, sep=",")
 ```
 
 ## What is mean total number of steps taken per day?
 We will need to sum the number of steps taken each day first and makke an histogram with the resulting vector
 
-```{r}
+
+```r
 arq2 = tapply(arq$steps, arq$date, sum)
 hist(arq2, xlab="Number of steps taken", main="Histogram", ylab="Number of days")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
 Calculate the mean and sd
 
-```{r}
+
+```r
 med=mean(arq2, na.rm=TRUE)
 desvio=sd(arq2, na.rm=TRUE)
 ```
 Mean is 
-`r med` 
+1.0766189\times 10^{4} 
 
 and sd is
-`r desvio`
+4269.1804927
 
 ## What is the average daily activity pattern?
 Doing the same procceding that wass done last time, but now considering the interval as the factor:
 
-```{r}
+
+```r
 new = arq[complete.cases(arq), ]
 arq3 = tapply(new$steps, new$interval, mean)
 interval=names(tapply(new$steps, new$interval, mean))
 plot(interval, arq3,type="l", xlab="Interval", main="Graph", ylab="Mean number of steps taken")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
 Finding the interval that contains the maximum number of steps
 
-```{r}
+
+```r
 arq4=data.frame(arq3, interval)
 ordered = arq4[order(-arq3),]
 ```
 The interval that contains, in average, the maximum number of steps is 
-`r ordered$interval[1]`
+835
 
 ## Imputing missing values
 Calculating the number of missing values
 
-```{r}
+
+```r
 NAs=nrow(arq)-nrow(new)
 ```
 
-Number of rows with NA is `r NAs`
+Number of rows with NA is 2304
 
 Filling the NAs with the mean for that day
 Unfortunatelly, there are days in witch all measurements are NA, in those days, we will use the mean of the period
 
-```{r}
+
+```r
 arq5 = tapply(arq$steps, arq$date, sum)
 med= mean(arq5, na.rm = TRUE)
 arq5[is.na(arq5)]=med
@@ -79,36 +85,42 @@ for (i in 1:17568)
 
 Making the histogram
 
-```{r}
+
+```r
 arq6 = tapply(arq1$steps, arq1$date, sum)
 hist(arq6, xlab="Number of steps taken", main="Histogram", ylab="Number of days")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
+```r
 new_med=median(arq6)
 new_sd=sd(arq6)
 ```
 
 The new median is:
-`r new_med`
+1.0766189\times 10^{4}
 
 The new SD is:
-`r new_sd`
+3974.390746
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 Transform the date as character to date and generate a vector of weekday/weekends
 
-```{r}
+
+```r
 data=as.Date(arq1$date)
 day=weekdays(data)
 day[(day=="sábado" | day=="domingo")]="weekend"
 day[day!="weekend"]="weekday"
 arq1=cbind(arq1, day)
-
 ```
 
 Plot the graph
 
-```{r}
+
+```r
 par(mfcol=c(2,1))
 
 week_days=arq1[arq1$day=="weekday", ]
@@ -123,3 +135,5 @@ interval_2=names(tapply(week_ends$steps, week_ends$interval, mean))
 plot(interval_1, string_days,type="l", xlab="Interval", main="Weekdays", ylab="Mean number of steps taken")
 plot(interval_2, string_ends,type="l", xlab="Interval", main="Weekends", ylab="Mean number of steps taken")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
